@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.47.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.47.0/mapbox-gl.css' rel='stylesheet' />
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/jquery-3.1.1.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* #zoom {
+            display: block;
+            position: relative;
+            margin: 20px auto;
+            width: 20%;
+            padding: 10px;
+            border: none;
+            border-radius: 3px;
+            font-size: 12px;
+            text-align: center;
+            color: white;
+            background-color: blue;
+        } */
+    </style>
+    <title>National TaiChung University of Science and Technology</title>
+</head>
+
+<body>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/mapbox-gl-geocoder.css'
+        type='text/css' />
+    <style>
+        .geocoder{
+            position: absolute;
+            z-index: 1;
+            width: 30%;
+            left: 90%;
+            margin-left: -25%;
+            top: 20px;
+        }
+        .mapboxgl-ctrl-geocoder{
+            min-width: 100%;
+        }
+    </style>
+    <div id='map' style="width:100%; height:450px;"></div>
+    <div id="geocoder" class="geocoder"></div>
+    <button id="zoom" type="button" class="btn btn-primary" style="display:block; position:relative; margin:20px auto; width:20%;">Zoom
+        to Buildings</button>
+
+</body>
+<script>
+
+    mapboxgl.accessToken = 'pk.eyJ1IjoienhjbW42MjA1IiwiYSI6ImNqaWxwN3NrMDBia2Mzdm1wZzB5YnFuaXkifQ.bRuZbJAuAIb1Mv-bHE2kzA';
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/zxcmn6205/cjl63io6p0eyi2tmq8gq2gurc',
+        center: [120.682063, 24.150351],
+        pitch:60,
+        bearing:-60,
+        zoom: 10
+    });
+
+    map.on('load', function () {
+        // 插入LAYER
+        var layers = map.getStyle().layers;
+
+        var labelLayerId;
+        for (var i = 0; i < layers.length; i++) {
+            if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
+                labelLayerId = layers[i].id;
+                break;
+            }
+        }
+        map.addLayer({
+            'id': '3d-buildings',
+            'source': 'composite',
+            'source-layer': 'building',
+            'filter': ['==', 'extrude', 'true'],
+            'type': 'fill-extrusion',
+            'minzoom': 15,
+            'paint': {
+                'fill-extrusion-color': '#aaa',
+
+
+                // 設定建築物屬性
+                'fill-extrusion-height': [
+                    "interpolate", ["linear"], ["zoom"],
+                    15, 0,
+                    15.05, ["get", "height"]
+                ],
+                'fill-extrusion-base': [
+                    "interpolate", ["linear"], ["zoom"],
+                    15, 0,
+                    15.05, ["get", "min_height"]
+                ],
+                'fill-extrusion-opacity': .6
+            }
+        }, labelLayerId);
+
+        // map.setPaintProperty('building', 'fill-color', [
+        //     'interpolate',
+        //     ['exponential', 0.5],
+        //     ['zoom'],
+        //     15,
+        //     '#e2714b',
+        //     22,
+        //     '#eee695'
+        // ]);
+        map.setPaintProperty('building', 'fill-opacity', [
+            'interpolate',
+            ['exponential', 0.5],
+            ['zoom'],
+            15,
+            0,
+            22,
+            1
+        ]);
+
+        
+        var geocoder=new MapboxGeocoder({
+            accessToken:mapboxgl.accessToken
+        });
+
+        document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+
+        d3.select('#zoom')
+            .on('click', function () {
+                map.zoomTo(16.3, { duration: 2500 });
+            });
+        //手機GPS定位
+        // map.addControl(new mapboxgl.GeolocateControl({
+        //     positionOptions:{
+        //         enableHighAccuracy:true
+        //     },
+        //     trackUserLocation:true
+        // }));
+
+        d3.json('source.json', function(err,data){
+            console.log(data);
+            
+
+        });
+    });
+</script>
+
+</html>
