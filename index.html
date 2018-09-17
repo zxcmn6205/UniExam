@@ -154,9 +154,55 @@
         // }));
 
         d3.json('source.json', function(err,data){
-            console.log(data);
-            
 
+            var mydata=data;
+
+            console.log(mydata);
+
+            var geojson={
+                type:"FeatureCollection",
+                features:[],
+            };  
+            
+            for(i=0;i<mydata.feeds.length;i++){
+                // if (window.CP.shouldStopExecution(1)){
+                //     break;
+                // }
+
+                geojson.features.push({
+                    "type":"Feature",
+                    "geometry":{
+                        "type":"point",
+                        "cordinates":[mydata.feeds[i].gps_lon,mydata.feeds[i].gps_lat]
+                    },
+                    "properties":{
+                        "gps_num:9":mydata.feeds[i].gps_num,
+                        "app":mydata.feeds[i].app,
+                        "s_d1":mydata.feeds[i].s_d1,
+                        "fmt_opt":mydata.feeds[i].fmt_opt,
+                        "s_d2":mydata.feeds[i].s_d2,
+                        "s_d0":mydata.feeds[i].s_d0,
+                        "gps_alt":mydata.feeds[i].gps_alt,
+                        "s_h0":mydata.feeds[i].s_h0,
+                        "SiteName":mydata.feeds[i].SiteName,
+                        "gps_fix":mydata.feeds[i].gps_fix,
+                        "ver_app":mydata.feeds[i].ver_app,
+                        "s_t0":mydata.feeds[i].s_t0,
+                        "timestamp":mydata.feeds[i].timestamp,
+                        "date":mydata.feeds[i].date,
+                        "tick":mydata.feeds[i].tick,
+                        "device_id":mydata.feeds[i].device_id,
+                        "s_0":mydata.feeds[i].s_0,
+                        "s_1":mydata.feeds[i].s_1,
+                        "s_2":mydata.feeds[i].s_2,
+                        "s_3":mydata.feeds[i].s_3,
+                        "ver_format":"3",
+                        "time":mydata.feeds[i].time
+                    }
+                })
+            };
+
+            console.log(geojson);
         });
     });
 </script>
