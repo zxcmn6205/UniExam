@@ -72,8 +72,8 @@
         container: 'map',
         style: 'mapbox://styles/zxcmn6205/cjl63io6p0eyi2tmq8gq2gurc',
         center: [120.682063, 24.150351],
-        pitch:60,
-        bearing:-60,
+        pitch: 60,
+        bearing: -60,
         zoom: 10
     });
 
@@ -82,7 +82,7 @@
         var layers = map.getStyle().layers;
 
         var labelLayerId;
-        
+
         for (var i = 0; i < layers.length; i++) {
             if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
                 labelLayerId = layers[i].id;
@@ -134,10 +134,10 @@
             1
         ]);
 
-        
-        var geocoder=new MapboxGeocoder({
-            accessToken:mapboxgl.accessToken
+        var geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken
         });
+
 
         document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
 
@@ -155,57 +155,76 @@
         //     trackUserLocation:true
         // }));
 
-        d3.json('source.json', function(err,data){
+        d3.json('source.json', function (err, data) {
 
-            var mydata=data;
+            var mydata = data;
 
             console.log(mydata);
 
-            var geojson={
-                type:"FeatureCollection",
-                features:[],
-            };  
-            
-            for(i=0;i<mydata.feeds.length;i++){
+            var geojson = {
+                "type": "FeatureCollection",
+                "features": [],
+            };
+
+            for (i = 0; i < mydata.feeds.length; i++) {
                 // if (window.CP.shouldStopExecution(1)){
                 //     break;
                 // }
 
                 geojson.features.push({
-                    "type":"Feature",
-                    "geometry":{
-                        "type":"point",
-                        "cordinates":[mydata.feeds[i].gps_lon,mydata.feeds[i].gps_lat]
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [mydata.feeds[i].gps_lon, mydata.feeds[i].gps_lat]
                     },
-                    "properties":{
-                        "gps_num:9":mydata.feeds[i].gps_num,
-                        "app":mydata.feeds[i].app,
-                        "s_d1":mydata.feeds[i].s_d1,
-                        "fmt_opt":mydata.feeds[i].fmt_opt,
-                        "s_d2":mydata.feeds[i].s_d2,
-                        "s_d0":mydata.feeds[i].s_d0,
-                        "gps_alt":mydata.feeds[i].gps_alt,
-                        "s_h0":mydata.feeds[i].s_h0,
-                        "SiteName":mydata.feeds[i].SiteName,
-                        "gps_fix":mydata.feeds[i].gps_fix,
-                        "ver_app":mydata.feeds[i].ver_app,
-                        "s_t0":mydata.feeds[i].s_t0,
-                        "timestamp":mydata.feeds[i].timestamp,
-                        "date":mydata.feeds[i].date,
-                        "tick":mydata.feeds[i].tick,
-                        "device_id":mydata.feeds[i].device_id,
-                        "s_0":mydata.feeds[i].s_0,
-                        "s_1":mydata.feeds[i].s_1,
-                        "s_2":mydata.feeds[i].s_2,
-                        "s_3":mydata.feeds[i].s_3,
-                        "ver_format":"3",
-                        "time":mydata.feeds[i].time
+                    "properties": {
+                        "gps_num": mydata.feeds[i].gps_num,
+                        "app": mydata.feeds[i].app,
+                        "s_d1": mydata.feeds[i].s_d1,
+                        "fmt_opt": mydata.feeds[i].fmt_opt,
+                        "s_d2": mydata.feeds[i].s_d2,
+                        "s_d0": mydata.feeds[i].s_d0,
+                        "gps_alt": mydata.feeds[i].gps_alt,
+                        "s_h0": mydata.feeds[i].s_h0,
+                        "SiteName": mydata.feeds[i].SiteName,
+                        "gps_fix": mydata.feeds[i].gps_fix,
+                        "ver_app": mydata.feeds[i].ver_app,
+                        "s_t0": mydata.feeds[i].s_t0,
+                        "timestamp": mydata.feeds[i].timestamp,
+                        "date": mydata.feeds[i].date,
+                        "tick": mydata.feeds[i].tick,
+                        "device_id": mydata.feeds[i].device_id,
+                        "s_0": mydata.feeds[i].s_0,
+                        "s_1": mydata.feeds[i].s_1,
+                        "s_2": mydata.feeds[i].s_2,
+                        "s_3": mydata.feeds[i].s_3,
+                        "ver_format": mydata.feeds[i].ver_format,
+                        "time": mydata.feeds[i].time
                     }
                 })
             };
 
+            map.addSource('pm2.5_data', {
+                type: 'geojson',
+                'data': geojson
+            });
+
+            map.addLayer({
+                'id': 'sensor_spot',
+                'type': 'circle',
+                'source': 'pm2.5_data',
+                'minzoom': 14,
+                'paint': {
+                    'circle-color': '#FCA107',
+                    'circle-opacity': 0.75,
+                    'circle-radius': 6
+                }
+            });
+
             console.log(geojson);
         });
+
+
     });
 </script>
 
