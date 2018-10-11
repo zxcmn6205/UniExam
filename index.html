@@ -58,6 +58,10 @@
         .mapboxgl-ctrl-geocoder{
             min-width: 100%;
         }
+        .mapboxgl-popup{
+            max-width: 400;
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        }
     </style>
     <div id='map' style="width:100%; height:100%;"></div>
     <div id="geocoder" class="geocoder"></div>
@@ -178,6 +182,7 @@
                         "coordinates": [mydata.feeds[i].gps_lon, mydata.feeds[i].gps_lat]
                     },
                     "properties": {
+                        "description":"感測器ID:"+mydata.feeds[i].SiteName+"<br>"+"PM2.5:"+mydata.feeds[i].s_d0+"<br>"+"Humid:"+mydata.feeds[i].s_h0+"%"+"<br>"+"Temperature:"+mydata.feeds[i].s_t0+"℃",
                         "gps_num": mydata.feeds[i].gps_num,
                         "app": mydata.feeds[i].app,
                         "s_d1": mydata.feeds[i].s_d1,
@@ -213,17 +218,52 @@
                 'id': 'sensor_spot',
                 'type': 'circle',
                 'source': 'pm2.5_data',
-                'minzoom': 14,
+                // 'minzoom': 14,
                 'paint': {
-                    'circle-color': '#FCA107',
+                    'circle-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['get', 's_d0'],
+                        11, '#D7FF99',
+                        23, '#85FF1F',
+                        35, '#54B800',
+                        41, '#FFFB38',
+                        47, '#FFCA29',
+                        53, '#FFA629',
+                        58, '#FF7F66',
+                        64, '#EB1925',
+                        70, '#A80000',
+                        72, '#A859F3'
+                    ],
                     'circle-opacity': 0.75,
-                    'circle-radius': 6
+                    'circle-radius': 9
                 }
             });
 
             console.log(geojson);
         });
 
+        map.on('click', 'sensor_spot', function(e){
+            var coordinates=e.features[0].geometry.coordinates.slice();
+            var description=e.features[0].properties.description;
+
+            while(Math.abs(e.lngLat.lng-coordinates[0])>180){
+                coordinates[0]+=e.lngLat.lng>coordinates[0]?360:-360;
+            }
+
+            new mapboxgl.Popup()
+                .setLngLat(coordinates)
+                .setHTML(description)
+                .addTo(map);
+        });
+
+        map.on('mouseenter', 'sensor_spot', function(){
+            map.getCanvas().style.cursor='pointer';
+        });
+
+        map.on('mouseleave', 'sensor_spot', function(){
+            map.getCanvas().style.cursor='';
+        });
 
     });
 </script>
