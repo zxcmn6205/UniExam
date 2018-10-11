@@ -182,7 +182,7 @@
                         "coordinates": [mydata.feeds[i].gps_lon, mydata.feeds[i].gps_lat]
                     },
                     "properties": {
-                        "description":"感測器ID:"+mydata.feeds[i].SiteName+"<br>"+"PM2.5:"+mydata.feeds[i].s_d0+"<br>"+"Humid:"+mydata.feeds[i].s_h0+"%"+"<br>"+"Temperature:"+mydata.feeds[i].s_t0+"℃",
+                        "description": "感測器ID:" + mydata.feeds[i].SiteName + "<br>" + "PM2.5:" + mydata.feeds[i].s_d0 + "<br>" + "Humid:" + mydata.feeds[i].s_h0 + "%" + "<br>" + "Temperature:" + mydata.feeds[i].s_t0 + "℃",
                         "gps_num": mydata.feeds[i].gps_num,
                         "app": mydata.feeds[i].app,
                         "s_d1": mydata.feeds[i].s_d1,
@@ -243,12 +243,12 @@
             console.log(geojson);
         });
 
-        map.on('click', 'sensor_spot', function(e){
-            var coordinates=e.features[0].geometry.coordinates.slice();
-            var description=e.features[0].properties.description;
+        map.on('click', 'sensor_spot', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var description = e.features[0].properties.description;
 
-            while(Math.abs(e.lngLat.lng-coordinates[0])>180){
-                coordinates[0]+=e.lngLat.lng>coordinates[0]?360:-360;
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
             }
 
             new mapboxgl.Popup()
@@ -257,12 +257,12 @@
                 .addTo(map);
         });
 
-        map.on('mouseenter', 'sensor_spot', function(){
-            map.getCanvas().style.cursor='pointer';
+        map.on('mouseenter', 'sensor_spot', function () {
+            map.getCanvas().style.cursor = 'pointer';
         });
 
-        map.on('mouseleave', 'sensor_spot', function(){
-            map.getCanvas().style.cursor='';
+        map.on('mouseleave', 'sensor_spot', function () {
+            map.getCanvas().style.cursor = '';
         });
 
     });
